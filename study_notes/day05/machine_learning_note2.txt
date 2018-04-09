@@ -1,0 +1,193 @@
+﻿1，如何训练深度神经网络?
+难点: 神经网络的不同层学习的速率显著不同
+          接近输出层学习速率比较合适时, 前面的层学习太慢, 有时被困住
+
+2，在5层的神经网络中: [784,30,30,30,10]
+学习速率分别为: 0.012, 0.060, and 0.283
+
+随机初始化, 看到第一层学习的速率远远低于第二层学习的速率
+
+可以看出, 第一个隐藏层比第四个几乎要慢100倍
+
+这种现象普遍存在于神经网络之中, 叫做: vanishing gradient problem
+
+另外一种情况是内层的梯度被外层大很多, 叫做exploding gradient problem
+
+所以说神经网络算法用gradient之类的算法学习存在不稳定性
+
+训练深度神经网络, 需要解决vanishing gradient problem
+
+3，前一次大约比后一层慢1/4
+
+4，加入想修正以上问题:1. 初始化比较大的权重: 比如 w1=w2=w3=w4=100；2. 
+
+不要太小
+比如为了让σ′最大(也就是=1/4), 我们可以通过调节b让z=0:
+b1 = -100*a0
+z1 = 100 * a0 + -100*a0 = 0
+
+这种情况下:
+
+= 100 * 1/4 = 25
+
+每层是前一层的25倍, 又出现了exploding的问题
+
+
+从根本来讲, 不是vanishing或者exploding的问题, 而是后面层的的梯度是前面层的累积的乘积, 所以神经网络非常不稳定. 唯一可能的情况是以上的连续乘积刚好平衡大约等于1, 但是这种几率非常小.
+
+所以, 这是一个不稳定的梯度问题, 通常有多层后, 每层网络都以非常不同的速率学习
+
+总体, vanishing problem具有普遍性:
+
+如果想要客克服vanishing problem, 需要
+
+的绝对值>1, 我们可以尝试赋值w很大, 但是问题是 σ′(z) 也取决于w: σ′(z)=σ′(wa+b)
+所以我们要让w大的时候, 还得注意不能让σ′(wa+b)变小, 这种情况非常少见, 除非输入值在一个非常小的区间内
+
+5， 训练深度神经网络的其他难点:
+
+ 2010 Glorot and Bengio*: sigmoid函数造成输出层的activation大部分饱和0, 并且建议了其他的activation函数
+
+2013 Sutskever, Martens, Dahl and Hinton*: 随机初始权重和偏向时, 提出momentum-based stochastic gradient descent
+
+
+综上所属, 训练深度神经网络中有很多难点.
+本节课: 神经网络的不稳定性
+activation方程的选择
+初始化权重和偏向的方法
+具体更新的过程
+hyper-parameter的选择
+
+这些目前都是当前学术界研究的课题, 已经取得一些有效的解决方法
+
+6，解决vanishing gradient方法:
+
+softplus函数可以被max函数模拟 max(0, x+N(0,1))
+
+max函数叫做Rectified Linear Function (ReL)
+
+Rectified Linear unit（ReLU）
+
+7，Sigmoid和ReL方程主要区别:
+
+Sigmoid函数值在[0, 1], ReL函数值在[0, ∞], 所以sigmoid函数方面来描述概率, 而ReL适合用来描述实数
+
+Sigmoid函数的gradient随着x增大或减小和消失
+ReL 函数不会:
+gradient = 0 (if x < 0), gradient = 1 (x > 0)
+
+Rectified Linear Unit在神经网络中的优势:
+
+不会产生vanishing gradient的问题
+
+8，convolution neural network
+28-5+1
+每一组共享同一权重和偏向
+
+有几个feature map 5*5就可以得到几个，24*24神经网络
+
+对于每一个feature map, 需要 5x5=25个权重参数, 加上1个偏向b, 26个
+如果有20个feature maps, 总共26x20=520个参数就可以定义CNN
+
+如果像之前的神经网络, 两两相连, 需要 28x28 = 784 输入层, 加上第一个隐藏层30个神经元, 则需要784x30再加上30个b, 总共23,550个参数! 多了40倍的参数.
+
+Pooling layers:
+
+浓缩神经网聚的代表性, 减小尺寸:
+
+重要特征点找到之后, 绝对位置并不重要, 相对位置更加重要
+
+其他pooling: L2 pooling, 平方和开方
+
+还是用Backpropagation, gradient descent解决
+
+9，feature map的作用是，在第一层中，用不同的而初始化权重，探测不同的特征
+
+10，Ensemble of network: 训练多个神经网络, 投票决定结果, 有时会提高
+
+11，为何只对最后一层用dropout?
+CNN本身的convolution层对于overfitting有防止作用: 共享的权重造成convolution filter强迫对于整个图像进行学习
+
+为什么可以克服深度学习里面的一些困难?
+
+用CNN大大减少了参数数量
+
+用dropout减少了overfitting
+
+用Rectified Linear Units代替了sigmoid, 避免了overfitting, 不同层学习率差别大的问题
+
+用GPU计算更快, 每次更新较少, 但是可以训练很多次
+
+12，目前的深度神经网络有多深? (多少层)?
+
+最多有20多层
+
+13，Restricted Boltzmann Machine:
+
+Geoff Hinton发明
+
+降低维度, 分类, 回归, 特征学习
+
+非监督学习(unsupervised learning)
+
+Reconstructions:
+
+隐藏层变成输入层, 反向更新, 用老的权重和新的bias:
+
+回到原始输入层:
+算出的值跟原始输入层的值比较, 最小化error, 接着迭代更新:
+
+
+正向更新: 用输入预测神经元的activation, 也就是输出的概率, 在给定的权重下: p(a|x; w)
+
+反向更新的时候:
+
+activation被输入到网络里面,来预测原始的数据X, RBM尝试估计X的概率, 对于给定的activation a: p(x|a; w)
+
+总结：个人理解，应该是用估计出的x概率，来估算新的数据
+
+结合以上两步: 模拟x和a的joint probability distribution: p(x, a)
+
+Generative learning: 模拟输入数据的概率分部
+discriminative learning: 把输入映射到输出, 区分几类点 
+ 
+Kullback Leibler Divergence（https://www.quora.com/What-is-a-good-laymans-explanation-for-the-Kullback-Leibler-divergence）
+
+p: 原始数据分布
+q: 重新建设的概率分部
+
+例如：对于图像一样, 像素点也有一定的概率分布:
+正向更新: 给定这些像素, 权重应该送出一个更强的信号给大象还是狗?
+
+反向更新: 给定大象和狗, 我应该期待什么样的像素分布?
+
+多层
+
+14，Deep Brief Network: 多个Restricted Boltzmann Machines
+
+每层的神经元不与本层的其他神经元交流
+
+最后一层通常是classification layer (e.g. Softmax)
+
+ 除了第一层, 最后一层: 
+每层都有两个作用: 对于前一层作为隐藏层, 作为后一层的输入层
+
+Generative
+Deep Autoencoders:
+
+由两个对称的Deep Brief Network组成:
+
+每层由Restricted Boltzmann Machine组成:
+
+对于MNIST, 输入转化为binary
+
+Encoding:
+784 (input) ----> 1000 ----> 500 ----> 250 ----> 100 -----> 30
+
+1000 > 784, sigmoid-brief unit代表的信息量比实数少
+
+Decoding:
+
+784 (output) <---- 1000 <---- 500 <---- 250 <---- 30
+
+用来降低维度, 图像搜索(压缩), 数据压缩, 信息检索

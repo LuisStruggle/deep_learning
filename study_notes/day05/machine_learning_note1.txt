@@ -1,0 +1,53 @@
+1，随机梯度下降算法：Random gradient descent algorithm
+
+2，我们到目前为止在神经网络中使用了好几个参数, hyper-parameters包括:
+学习率(learning rate): η
+Regularization parameter: λ
+
+3，差到跟随机猜测一样!
+
+神经网络中可变化调整的因素很多:
+
+神经网络结构: 层数, 每层神经元个数多少
+初始化w和b的方法
+Cost函数
+Regularization: L1, L2
+Sigmoid输出还是Softmax?
+使用Droput?
+训练集大小
+mini-batch size
+
+学习率(learning rate): η
+Regularization parameter: λ
+
+总体策略: 
+
+从简单的出发: 开始实验
+如: MNIST数据集, 开始不知如何设置, 可以先简化使用0,1两类图, 减少80%数据量, 用两层神经网络[784, 2] (比[784, 30, 2]快)
+
+更快的获取反馈: 之前每个epoch来检测准确率, 可以替换为每1000个图之后,
+                           或者减少validation set的量, 比如用100代替10,000
+
+4，如果学习率太大, 可能造成越走越高, 跳过局部最低点
+太小, 学习可能太慢
+
+对于学习率, 可以从0.001, 0.01, 0.1, 1, 10 开始尝试, 如果发现cost开始增大, 停止, 实验更小的微调
+
+对于MNIST, 先找到0.1, 然后0.5, 然后0.25
+
+对于提前停止学习的条件设置, 如果accuracy在一段时间内变化很小 (不是一两次)
+
+之前一直使用学习率是常数, 可以开始设置大一下, 后面逐渐减少: 比如开始设定常数, 直到在验证集上准确率开始下降, 减少学习率 (/2, /3)
+
+5，对于regularization parameter λ:
+
+先不设定regularization, 把学习率调整好, 然后再开始实验λ, 1.0, 10, 100..., 找到合适的, 再微调
+
+6，太小: 没有充分利用矩阵计算的library和硬件的整合的快速计算
+太大: 更新权重和偏向不够频繁
+
+好在mini-batch size和其他参数变化相对独立, 所以不用重新尝试, 一旦选定
+
+7，如何选择合适的hyper-parameters仍是一个正在研究的课题
+
+8，随机梯度下降有没有其他变种: Hessian 优化, Momentum-based gradient descent

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import deep_learning2 as network
+import deep_learning3 as network
 from sklearn.datasets import fetch_mldata
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelBinarizer

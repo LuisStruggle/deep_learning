@@ -5,16 +5,16 @@
 """
 from PIL import Image, ImageDraw
 from scikit_learn14 import hcluster
-from scikit_learn14 import getHeight
-from scikit_learn14 import getDepth
+from scikit_learn14 import getheight
+from scikit_learn14 import getdepth
 import numpy as np
 import os
 
 
 def drawdendrogram(clust, imlist, jpeg='clusters.jpg'):
-    h = getHeight(clust) * 1000
+    h = getheight(clust) * 1000
     w = 1200
-    depth = getDepth(clust)
+    depth = getdepth(clust)
 
     scaling = float(w - 150) / depth
 
@@ -24,13 +24,13 @@ def drawdendrogram(clust, imlist, jpeg='clusters.jpg'):
     draw.line((0, h / 2, 50, h / 2), fill=(255, 0, 0))
 
     drawnode(draw, clust, 50, int(h / 2), scaling, imlist, img)
-    img.save(jpeg)
+    img.save(r'scikit_learn_study\datasource\image\\' + jpeg)
 
 
 def drawnode(draw, clust, x, y, scaling, imlist, img):
     if clust.id < 0:
-        h1 = getHeight(clust.left) * 200
-        h2 = getHeight(clust.right) * 200
+        h1 = getheight(clust.left) * 200
+        h2 = getheight(clust.right) * 200
         top = y - (h1 + h2) / 2
         bottom = y + (h1 + h2) / 2
 
@@ -66,6 +66,7 @@ n = len(imlist)
 print(n)
 
 features = np.zeros((n, 3))
+# a是个矩阵或者数组，a.flatten()就是把a降到一维，默认是按横的方向降
 for i in range(n):
     im = np.array(Image.open(imlist[i]))
     R = np.mean(im[:, :, 0].flatten())

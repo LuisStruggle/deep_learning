@@ -26,5 +26,7 @@ train_y = LabelBinarizer().fit_transform(train_y).reshape(-1, 10, 1)
 train_data = list(zip(train_x, train_y))
 test_data = list(zip(test_x, test_y))
 
+###############################################################################
+# 以上是数据处理，下面是网络训练
 net = network.Network([784, 30, 10])
 net.SGD(train_data, 30, 10, 3.0, test_data=test_data)

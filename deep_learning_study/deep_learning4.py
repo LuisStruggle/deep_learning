@@ -21,6 +21,15 @@ regularization, and better initialization of network weights.  Note
 that I have focused on making the code simple, easily readable, and
 easily modifiable.  It is not optimized, and omits many desirable
 features.
+
+复习之前原始的版本: deep_learn3.py
+
+我们从以下方面做了提高:
+
+Cost函数: cross-entropy
+Regularization: L1, L2
+这里的最后一层使用的还是sigmoid，未使用到Softmax layer
+初始化 1/sqrt(n_in)
 """
 import json
 import random
@@ -30,6 +39,11 @@ import numpy as np
 
 
 # Define the quadratic and cross-entropy cost functions
+# 二次损失函数
+# 为什么把cost实现在一个类里面而不是一个function？
+# 计算cost有两个作用:
+# 1. 衡量网络输出的值和理想预期值的匹配程度
+# 2. 在用backprogapation计算偏导数的时候, 需要计算
 class QuadraticCost(object):
     @staticmethod
     def fn(a, y):
@@ -37,15 +51,17 @@ class QuadraticCost(object):
         ``y``.
         """
         # 定义二次cost
-        # linalg=linear+algebra
+        # linalg=linear+algebra（线性代数）
         return 0.5 * np.linalg.norm(a - y)**2
 
     @staticmethod
     def delta(z, a, y):
         """Return the error delta from the output layer."""
+        # 从输出层返回错误增量。
         return (a - y) * sigmoid_prime(z)
 
 
+# 交叉熵损失函数
 class CrossEntropyCost(object):
     @staticmethod
     def fn(a, y):
@@ -113,7 +129,7 @@ class Network(object):
         This weight and bias initializer uses the same approach as in
         Chapter 1, and is included for purposes of comparison.  It
         will usually be better to use the default weight initializer
-        instead.
+        instead.（使用默认的权重初始化器通常会更好。）
         """
         self.biases = [np.random.randn(y, 1) for y in self.sizes[1:]]
         self.weights = [
@@ -156,37 +172,39 @@ class Network(object):
         evaluation data at the end of each epoch. Note that the lists
         are empty if the corresponding flag is not set.
         """
-        if evaluation_data: n_data = len(evaluation_data)
+        # 正则化参数lmbda，evaluation_data通常是验证或测试数据，eta是学习率
+        if evaluation_data:
+            n_data = len(evaluation_data)
         n = len(training_data)
         evaluation_cost, evaluation_accuracy = [], []
         training_cost, training_accuracy = [], []
-        for j in xrange(epochs):
+        for j in range(epochs):
             random.shuffle(training_data)
             mini_batches = [
                 training_data[k:k + mini_batch_size]
-                for k in xrange(0, n, mini_batch_size)
+                for k in range(0, n, mini_batch_size)
             ]
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta, lmbda,
                                        len(training_data))
-            print "Epoch %s training complete" % j
+            print("Epoch %s training complete" % j)
             if monitor_training_cost:
                 cost = self.total_cost(training_data, lmbda)
                 training_cost.append(cost)
-                print "Cost on training data: {}".format(cost)
+                print("Cost on training data: {}".format(cost))
             if monitor_training_accuracy:
                 accuracy = self.accuracy(training_data, convert=True)
                 training_accuracy.append(accuracy)
-                print "Accuracy on training data: {} / {}".format(accuracy, n)
+                print("Accuracy on training data: {} / {}".format(accuracy, n))
             if monitor_evaluation_cost:
                 cost = self.total_cost(evaluation_data, lmbda, convert=True)
                 evaluation_cost.append(cost)
-                print "Cost on evaluation data: {}".format(cost)
+                print("Cost on evaluation data: {}".format(cost))
             if monitor_evaluation_accuracy:
                 accuracy = self.accuracy(evaluation_data)
                 evaluation_accuracy.append(accuracy)
-                print "Accuracy on evaluation data: {} / {}".format(
-                    self.accuracy(evaluation_data), n_data)
+                print("Accuracy on evaluation data: {} / {}".format(
+                    self.accuracy(evaluation_data), n_data))
             print
         return evaluation_cost, evaluation_accuracy, \
             training_cost, training_accuracy
@@ -238,7 +256,7 @@ class Network(object):
         # second-last layer, and so on.  It's a renumbering of the
         # scheme in the book, used here to take advantage of the fact
         # that Python can use negative indices in lists.
-        for l in xrange(2, self.num_layers):
+        for l in range(2, self.num_layers):
             z = zs[-l]
             sp = sigmoid_prime(z)
             delta = np.dot(self.weights[-l + 1].transpose(), delta) * sp
@@ -284,7 +302,8 @@ class Network(object):
         cost = 0.0
         for x, y in data:
             a = self.feedforward(x)
-            if convert: y = vectorized_result(y)
+            if convert:
+                y = vectorized_result(y)
             cost += self.cost.fn(a, y) / len(data)
         cost += 0.5 * (lmbda / len(data)) * sum(
             np.linalg.norm(w)**2 for w in self.weights)
@@ -303,7 +322,8 @@ class Network(object):
         f.close()
 
 
-#### Loading a Network
+# Loading a Network
+# 读取已存储的神经网络
 def load(filename):
     """Load a neural network from the file ``filename``.  Returns an
     instance of Network.
@@ -318,7 +338,8 @@ def load(filename):
     return net
 
 
-#### Miscellaneous functions
+# Miscellaneous functions
+# 矢量化结果（one-hot）
 def vectorized_result(j):
     """Return a 10-dimensional unit vector with a 1.0 in the j'th position
     and zeroes elsewhere.  This is used to convert a digit (0...9)
@@ -334,6 +355,7 @@ def sigmoid(z):
     return 1.0 / (1.0 + np.exp(-z))
 
 
+# sigmoid的求导
 def sigmoid_prime(z):
     """Derivative of the sigmoid function."""
     return sigmoid(z) * (1 - sigmoid(z))

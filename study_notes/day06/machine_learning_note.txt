@@ -1,18 +1,19 @@
-1���Ƽ�ϵͳ��CF��Эͬ���ˣ�MF������ֽ�
-2��������ϡ���ʱ��Эͬ���˲�һ���Ⱦ���ֽ�ã�����ֽ������һЩƫ��bias���Ż�
-3�����ڷ��ֹ�ͬ��Ⱥ�cluster���ࣩ
-4����ʱ����Ϊ�ලѧϰ��ϡ��������Ԥ����
-5���ػ�����ƽ�Ʋ����Ե��ص�
-6��batch normalizationһ�����ȫ���Ӳ��У���Ϊȫ���Ӳ㲨�������
-7���鿴ѵ�����Ͳ��Լ�֮���׼ȷ��
-8��LSTM��Long Short Term Memory)
-9���ݶ���ʧ��һ���ǳ�ʼ����Ԫδ�����һ����ѧϰ�ʹ���
-10������tanh��ʼ��Ȩ�أ�w=np.random.randn(fan_in,fan_out)/np.sqrt(fan_in)
-����ReLU��ʼ��Ȩ�أ�w=np.random.randn(fan_in,fan_out)/np.sqrt(fan_in/2)
-11���Ż���ʽ��ѧϰ�ʣ����򻯣�������dropout amount�������·�ʽ
-12����������ÿ�θ�Ȩֵ�ĸ��¿����Ȩֵ��ǧ��֮һ�������ǱȽϺ����ģ�̫�����ѧϰ�ʣ�̫�߽���ѧϰ��
-1e-3��ǧ��֮һ��1e-7��0.0000001
-13��ͼ��һ�㴦����ȥ��ֵ��ʹ��ֲ���0�����긽��
-14���Դ�����ģ�ͽ���ѵ����Ȼ���ڲ��Ե�ʱ�򽫽������ƽ����Ч���ͻ�õ�2%������
-15��dropout����ÿһ�����Ԫһ��Ϊ0������ʧ�������ǰʧ����ҲҪ��ʧ��
-16��ÿһ���˲�����������ȷ���������˵�
+1，推荐系统：CF：协同过滤，MF：矩阵分解
+2，当矩阵稀疏的时候，协同过滤不一定比矩阵分解好，矩阵分解可以有一些偏差bias的优化
+3，用于发现共同的群类（cluster聚类）
+4，有时候作为监督学习中稀疏特征的预处理
+
+5，池化层有平移不变性的特点
+6，batch normalization一般加在全连接层中，因为全连接层波动会更大
+7，查看训练集和测试集之间的准确率
+8，LSTM（Long Short Term Memory)
+9，梯度消失，一般是初始化神经元未被激活，一种是学习率过大
+10，对于tanh初始化权重，w=np.random.randn(fan_in,fan_out)/np.sqrt(fan_in)
+对于ReLU初始化权重，w=np.random.randn(fan_in,fan_out)/np.sqrt(fan_in/2)
+11，优化方式：学习率，正则化，差量（dropout amount），更新方式
+12，基本上你每次给权值的更新跨度是权值的千分之一，这样是比较合理的，太低提高学习率，太高降低学习率
+1e-3是千分之一，1e-7是0.0000001
+13，图像一般处理是去均值，使其分布在0点坐标附近
+14，对大量的模型进行训练，然后在测试的时候将结果进行平均，效果就会得到2%的提升
+15，dropout是让每一层的神经元一半为0，让其失活。不仅向前失活，向后也要是失活
+16，每一个滤波器都是在深度方向上做点乘的

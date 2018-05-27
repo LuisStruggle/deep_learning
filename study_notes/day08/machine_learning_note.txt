@@ -1,0 +1,10 @@
+1，池化层有压缩数据和参数的量，减小过拟合；
+2，RNN不仅仅能够处理序列输出，也能得到序列输出，这里序列指的是向量的序列；
+3，RNN学习出来的是程序（状态机），不是函数；
+4，PyTorch 采用了动态计算图（dynamic computational graph）结构，而不是大多数开源框架，比如 TensorFlow、Caffe、CNTK、Theano 等采用的静态计算图。
+5，jupyter中的%matplotlib inline 的作用是：这是一条专门的命令，用于通知笔记本将 matplotlib 图表直接显示在浏览器中。
+6，将新的anaconda虚拟环境，与jupyter内核相关联的步骤：
+conda install -n 环境名称 ipykernel（给新的虚拟环境装ipykernel）
+python -m ipykernel install --user --name 环境名称 --display-name "Python (环境名称)"
+
+7，

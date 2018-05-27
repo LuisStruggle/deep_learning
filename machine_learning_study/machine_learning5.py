@@ -2,26 +2,31 @@
 # -*- coding: utf-8 -*-
 """
 抽取图像特征值
+大家都知道看到了，直接用像素和线性分类器，咱们得到的结果并不是那么的理想。
+所以这里咱们做个事情，咱们先抽取出一些图像特征，再用这些特征来做图像识别，看看效果是不是提升了。
 """
 # 载入CIFAR10数据集
-from features import color_histogram_hsv, hog_feature
+from features import color_histogram_hsv, hog_feature, extract_features
 import numpy as np
 from data_utils import load_CIFAR10
 
 
 def get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000):
     # Load the raw CIFAR-10 data
-    cifar10_dir = 'julyedu/datasets/cifar-10-batches-py'
+    cifar10_dir = r'machine_learning_study/dataset/cifar-10-batches-py'
     X_train, y_train, X_test, y_test = load_CIFAR10(cifar10_dir)
 
     # Subsample the data
     mask = range(num_training, num_training + num_validation)
+    # 49000-50000作为val
     X_val = X_train[mask]
     y_val = y_train[mask]
     mask = range(num_training)
+    # 0-49000作为训练集
     X_train = X_train[mask]
     y_train = y_train[mask]
     mask = range(num_test)
+    # 0-1000作为测试集
     X_test = X_test[mask]
     y_test = y_test[mask]
 
@@ -30,7 +35,8 @@ def get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000):
 
 X_train, y_train, X_val, y_val, X_test, y_test = get_CIFAR10_data()
 
-# 这里我们会抽取2种特征，第一是大家熟知的Histogram of Oriented Gradients (HOG)，第二种是HSV空间的颜色信息color_histogram_hsv
+# 这里我们会抽取2种特征，第一是大家熟知的Histogram of Oriented Gradients (HOG)，
+# 第二种是HSV空间的颜色信息color_histogram_hsv
 #
 # 一般数来，HOG会捕获图片的纹理信息，而会忽略颜色信息，所以我们这里的color_histogram_hsv是对颜色的一个补充，我们希望2种信息咱们都能用上。
 
@@ -52,6 +58,7 @@ X_train_feats -= mean_feat
 X_val_feats -= mean_feat
 X_test_feats -= mean_feat
 
+"""
 # 然后咱们得做个标准化了，让所有的特征变化幅度都一致化
 std_feat = np.std(X_train_feats, axis=1)
 std_feat = np.expand_dims(std_feat, axis=1)
@@ -64,3 +71,4 @@ X_train_feats = np.vstack(
     [X_train_feats, np.ones((1, X_train_feats.shape[1]))])
 X_val_feats = np.vstack([X_val_feats, np.ones((1, X_val_feats.shape[1]))])
 X_test_feats = np.vstack([X_test_feats, np.ones((1, X_test_feats.shape[1]))])
+"""

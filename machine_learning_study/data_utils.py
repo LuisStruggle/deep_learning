@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+数据处理类
+"""
 import pickle as pickle
 import numpy as np
 import os

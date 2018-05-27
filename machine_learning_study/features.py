@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+图像特征提取
+"""
 import matplotlib
 import numpy as np
 from scipy.ndimage import uniform_filter
@@ -50,35 +55,34 @@ def extract_features(imgs, feature_fns, verbose=False):
 
 def rgb2gray(rgb):
     """
-    把RGB图像转成灰度图  
+    把RGB图像转成灰度图
     """
     return np.dot(rgb[..., :3], [0.299, 0.587, 0.144])
 
 
 def hog_feature(im):
     """
-      计算图像的Histogram of Gradient (HOG)特征
-  
+      计算图像的Histogram of Gradient (HOG即方向梯度直方图)特征
+
       根据skimage.feature.hog改写
       http://pydoc.net/Python/scikits-image/0.4.2/skimage.feature.hog
-     
+
       参考:
       Histograms of Oriented Gradients for Human Detection
       Navneet Dalal and Bill Triggs, CVPR 2005
-     
+
       参数:
       im : 一张图片
-      
+
       返回值:
       feat: Histogram of Gradient (HOG) 特征
-    
     """
 
     # 转成灰度图
     if im.ndim == 3:
         image = rgb2gray(im)
     else:
-        image = np.at_least_2d(im)
+        image = np.atleast_2d(im)
 
     sx, sy = image.shape  # image size
     orientations = 9  # number of gradient bins
@@ -106,26 +110,26 @@ def hog_feature(im):
         cond2 = temp_ori > 0
         temp_mag = np.where(cond2, grad_mag, 0)
         orientation_histogram[:, :, i] = uniform_filter(
-            temp_mag, size=(cx, cy))[cx / 2::cx, cy / 2::cy].T
+            temp_mag, size=(cx, cy))[cx // 2::cx, cy // 2::cy].T
 
     return orientation_histogram.ravel()
 
 
 def color_histogram_hsv(im, nbin=10, xmin=0, xmax=255, normalized=True):
     """
-  Compute color histogram for an image using hue.
+    Compute color histogram for an image using hue.
 
-  Inputs:
-  - im: H x W x C RGB像素数组
-  - nbin: 分成多少个bin (default: 10)
-  - xmin: 最小像素值 (default: 0)
-  - xmax: 最大像素值 (default: 255)
-  - normalized: 是否是归一化的 (default: True)
+    Inputs:
+    - im: H x W x C RGB像素数组
+    - nbin: 分成多少个bin (default: 10)
+    - xmin: 最小像素值 (default: 0)
+    - xmax: 最大像素值 (default: 255)
+    - normalized: 是否是归一化的 (default: True)
 
-  Returns:
-    对应bin大小的numpy list特征
-  """
-    ndim = im.ndim
+    Returns:
+        对应bin大小的numpy list特征
+    """
+    # ndim = im.ndim
     bins = np.linspace(xmin, xmax, nbin + 1)
     hsv = matplotlib.colors.rgb_to_hsv(im / xmax) * xmax
     imhist, bin_edges = np.histogram(

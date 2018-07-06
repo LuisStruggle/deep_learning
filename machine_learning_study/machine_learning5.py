@@ -9,6 +9,8 @@
 from features import color_histogram_hsv, hog_feature, extract_features
 import numpy as np
 from data_utils import load_CIFAR10
+from classifiers.linear_classifier import LinearSVM
+import matplotlib.pyplot as plt
 
 
 def get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000):
@@ -58,7 +60,6 @@ X_train_feats -= mean_feat
 X_val_feats -= mean_feat
 X_test_feats -= mean_feat
 
-"""
 # 然后咱们得做个标准化了，让所有的特征变化幅度都一致化
 std_feat = np.std(X_train_feats, axis=1)
 std_feat = np.expand_dims(std_feat, axis=1)
@@ -71,4 +72,72 @@ X_train_feats = np.vstack(
     [X_train_feats, np.ones((1, X_train_feats.shape[1]))])
 X_val_feats = np.vstack([X_val_feats, np.ones((1, X_val_feats.shape[1]))])
 X_test_feats = np.vstack([X_test_feats, np.ones((1, X_test_feats.shape[1]))])
-"""
+
+# 关于学习率和正则化项系数的设定，咱们用交叉验证来选择最佳的参数设定
+# 下面是用图像特征处理过的数据做实践
+
+# 指定一些学习率和正则化系数
+learning_rates = [1e-7, 5e-6, 1e-6, 1e-5]
+regularization_strengths = [5e4, 1e5, 5e5, 1e6]
+
+results = {}
+best_val = -1
+best_svm = None
+
+verbose = True
+for lr in learning_rates:
+    for reg in regularization_strengths:
+        if verbose:
+            print("Training with hyper parameter " +
+                  "learning rate: %e, regularization: %e \n" % (lr, reg))
+        svm = LinearSVM()
+        loss_hist = svm.train(
+            X_train_feats,
+            y_train,
+            learning_rate=lr,
+            reg=reg,
+            num_iters=1500,
+            verbose=False)
+
+        y_train_pred = svm.predict(X_train_feats)
+        training_accuracy = np.mean(y_train == y_train_pred)
+
+        y_val_pred = svm.predict(X_val_feats)
+        val_accuracy = np.mean(y_val == y_val_pred)
+
+        results[lr, reg] = (training_accuracy, val_accuracy)
+        if val_accuracy > best_val:
+            best_val = val_accuracy
+            best_svm = svm
+
+# Print out results.
+for lr, reg in sorted(results):
+    train_accuracy, val_accuracy = results[(lr, reg)]
+    print('lr %e reg %e train accuracy: %f val accuracy: %f' %
+          (lr, reg, train_accuracy, val_accuracy))
+
+print(
+    'best validation accuracy achieved during cross-validation: %f' % best_val)
+
+# 在测试集上做评估
+y_test_pred = best_svm.predict(X_test_feats)
+test_accuracy = np.mean(y_test == y_test_pred)
+print(test_accuracy)
+
+# 每个类别中咱展示出8张图片看看
+examples_per_class = 8
+classes = [
+    'plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship',
+    'truck'
+]
+for cls, cls_name in enumerate(classes):
+    idxs = np.where((y_test != cls) & (y_test_pred == cls))[0]
+    idxs = np.random.choice(idxs, examples_per_class, replace=False)
+    for i, idx in enumerate(idxs):
+        plt.subplot(examples_per_class, len(classes),
+                    i * len(classes) + cls + 1)
+        plt.imshow(X_test[idx].astype('uint8'))
+        plt.axis('off')
+        if i == 0:
+            plt.title(cls_name)
+plt.show()

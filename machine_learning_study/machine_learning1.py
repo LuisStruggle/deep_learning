@@ -19,10 +19,10 @@ def euclidean_dis(rating1, rating2):
         if key in rating2:
             distance += (rating1[key] - rating2[key]) ^ 2
             commonRatings = True
-    #两个打分序列之间有公共打分电影
+    # 两个打分序列之间有公共打分电影
     if commonRatings:
         return distance
-    #无公共打分电影
+    # 无公共打分电影
     else:
         return -1
 
@@ -36,10 +36,10 @@ def manhattan_dis(rating1, rating2):
         if key in rating2:
             distance += abs(rating1[key] - rating2[key])
             commonRatings = True
-    #两个打分序列之间有公共打分电影
+    # 两个打分序列之间有公共打分电影
     if commonRatings:
         return distance
-    #无公共打分电影
+    # 无公共打分电影
     else:
         return -1
 
@@ -61,10 +61,10 @@ def cos_dis(rating1, rating2):
         if key in rating2:
             distance += rating1[key] * rating2[key]
             commonRatings = True
-    #两个打分序列之间有公共打分电影
+    # 两个打分序列之间有公共打分电影
     if commonRatings:
         return 1 - distance / sqrt(dot_product_1 * dot_product_2)
-    #无公共打分电影
+    # 无公共打分电影
     else:
         return -1
 
@@ -89,21 +89,21 @@ def pearson_dis(rating1, rating2):
             sum_x2 += pow(x, 2)
             sum_y2 += pow(y, 2)
     # now compute denominator
-    denominator = sqrt(sum_x2 - pow(sum_x, 2) / n) * sqrt(
-        sum_y2 - pow(sum_y, 2) / n)
+    denominator = sqrt(sum_x2 - pow(sum_x, 2) / n) * sqrt(sum_y2 -
+                                                          pow(sum_y, 2) / n)
     if denominator == 0:
         return 0
     else:
         return (sum_xy - (sum_x * sum_y) / n) / denominator
 
 
-#查找最近邻
+# 查找最近邻
 def computeNearestNeighbor(username, users):
     """在给定username的情况下，计算其他用户和它的距离并排序"""
     distances = []
     for user in users:
         if user != username:
-            #distance = manhattan_dis(users[user], users[username])
+            # distance = manhattan_dis(users[user], users[username])
             distance = pearson_dis(users[user], users[username])
             distances.append((distance, user))
     # 根据距离排序，距离越近，排得越靠前
@@ -111,7 +111,7 @@ def computeNearestNeighbor(username, users):
     return distances
 
 
-#推荐
+# 推荐
 def recommend(username, users):
     """对指定的user推荐电影"""
     # 找到最近邻
@@ -122,9 +122,80 @@ def recommend(username, users):
     neighborRatings = users[nearest]
     userRatings = users[username]
     for artist in neighborRatings:
-        if not artist in userRatings:
+        if artist not in userRatings:
             recommendations.append((artist, neighborRatings[artist]))
     results = sorted(
         recommendations, key=lambda artistTuple: artistTuple[1], reverse=True)
     for result in results:
-        print result[0], result[1]
+        print(result[0], result[1])
+
+
+# 构造一份打分数据集，可以去movielens下载真实的数据做实验
+users = {
+    "小明": {
+        "中国合伙人": 5.0,
+        "太平轮": 3.0,
+        "荒野猎人": 4.5,
+        "老炮儿": 5.0,
+        "我的少女时代": 3.0,
+        "肖洛特烦恼": 4.5,
+        "火星救援": 5.0
+    },
+    "小红": {
+        "小时代4": 4.0,
+        "荒野猎人": 3.0,
+        "我的少女时代": 5.0,
+        "肖洛特烦恼": 5.0,
+        "火星救援": 3.0,
+        "后会无期": 3.0
+    },
+    "小阳": {
+        "小时代4": 2.0,
+        "中国合伙人": 5.0,
+        "我的少女时代": 3.0,
+        "老炮儿": 5.0,
+        "肖洛特烦恼": 4.5,
+        "速度与激情7": 5.0
+    },
+    "小四": {
+        "小时代4": 5.0,
+        "中国合伙人": 3.0,
+        "我的少女时代": 4.0,
+        "匆匆那年": 4.0,
+        "速度与激情7": 3.5,
+        "火星救援": 3.5,
+        "后会无期": 4.5
+    },
+    "六爷": {
+        "小时代4": 2.0,
+        "中国合伙人": 4.0,
+        "荒野猎人": 4.5,
+        "老炮儿": 5.0,
+        "我的少女时代": 2.0
+    },
+    "小李": {
+        "荒野猎人": 5.0,
+        "盗梦空间": 5.0,
+        "我的少女时代": 3.0,
+        "速度与激情7": 5.0,
+        "蚁人": 4.5,
+        "老炮儿": 4.0,
+        "后会无期": 3.5
+    },
+    "隔壁老王": {
+        "荒野猎人": 5.0,
+        "中国合伙人": 4.0,
+        "我的少女时代": 1.0,
+        "Phoenix": 5.0,
+        "甄嬛传": 4.0,
+        "The Strokes": 5.0
+    },
+    "邻村小芳": {
+        "小时代4": 4.0,
+        "我的少女时代": 4.5,
+        "匆匆那年": 4.5,
+        "甄嬛传": 2.5,
+        "The Strokes": 3.0
+    }
+}
+recommend('六爷', users)

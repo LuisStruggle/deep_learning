@@ -9,7 +9,7 @@ from sklearn import datasets
 # 获取iris数据集
 iris = datasets.load_iris()
 
-print(iris)
+# print(iris)
 
 # 创建分类器
 ng = neighbors.KNeighborsClassifier()

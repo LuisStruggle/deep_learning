@@ -2,4 +2,15 @@
 import surprise 
 import lightfm
 
-2，
+2，Ensemble learning（集成学习）
+参考：http://www.cnblogs.com/GuoJiaSheng/p/4033584.html
+
+集成学习：1，可以提高分类器的精度；2，可以提高分类器的泛化能力；
+
+3，决策树（特征选择 生成 剪枝）
+决策树属性的选择方法：
+ID3：信息增益
+C4.5：信息增益比
+CART（Classification And Regression Tree）：基尼指数
+
+4，

@@ -43,7 +43,7 @@ Regularization parameter: λ
 
 先不设定regularization, 把学习率调整好, 然后再开始实验λ, 1.0, 10, 100..., 找到合适的, 再微调
 
-6，太小: 没有充分利用矩阵计算的library和硬件的整合的快速计算
+6，mini batch太小: 没有充分利用矩阵计算的library和硬件的整合的快速计算
 太大: 更新权重和偏向不够频繁
 
 好在mini-batch size和其他参数变化相对独立, 所以不用重新尝试, 一旦选定
